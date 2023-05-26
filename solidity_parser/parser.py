@@ -167,7 +167,7 @@ class AstVisitor(SolidityVisitor):
 
 
     def visitFunctionDefinition(self, ctx: SolidityParser.FunctionDefinitionContext):
-        isConstructor = isFallback =isReceive = False
+        isConstructor = isFallback = isReceive = isOverride = False
 
         fd = ctx.functionDescriptor()
         if fd.ConstructorKeyword():
@@ -205,6 +205,9 @@ class AstVisitor(SolidityVisitor):
         else:
             stateMutability = None
 
+        if ctx.modifierList().overrideSpecifier():
+            isOverride = True 
+
         return Node(ctx=ctx,
                     type="FunctionDefinition",
                     name=name,
@@ -216,6 +219,7 @@ class AstVisitor(SolidityVisitor):
                     isConstructor=isConstructor,
                     isFallback=isFallback,
                     isReceive=isReceive,
+                    isOverride=isOverride,
                     stateMutability=stateMutability)
 
     def visitReturnParameters(self, ctx: SolidityParser.ReturnParametersContext):

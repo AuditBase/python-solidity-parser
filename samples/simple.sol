@@ -8,6 +8,13 @@ import "./abc.sol" as x;
 import * as y from "./abc.sol";
 import {a as b, c as d, f} from "./abc.sol";
 
+contract Parent {
+    function saySomething(string calldata text) external pure returns (string memory) {
+        return text;
+    }
+}
+
+
 contract SimpleAuction {
     // Parameters of the auction. Times are either
     // absolute unix timestamps (seconds since 1970-01-01)
@@ -123,6 +130,10 @@ contract SimpleAuction {
 
     function lol() public  {
         return pendingReturns[msg.sender];
+    }
+
+    function saySomething(string calldata text) external pure override returns (string memory) {
+        return text;
     }
 
     /// End the auction and send the highest bid
