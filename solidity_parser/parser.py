@@ -55,7 +55,7 @@ class AstVisitor(SolidityVisitor):
         values = []
         comma = True
 
-        for el in children:
+        for el in children: 
             if comma:
                 if el.getText() == ',':
                     values.append(None)
@@ -167,7 +167,7 @@ class AstVisitor(SolidityVisitor):
 
 
     def visitFunctionDefinition(self, ctx: SolidityParser.FunctionDefinitionContext):
-        isConstructor = isFallback =isReceive = False
+        isConstructor = isFallback = isReceive = isOverride = False
 
         fd = ctx.functionDescriptor()
         if fd.ConstructorKeyword():
@@ -182,7 +182,7 @@ class AstVisitor(SolidityVisitor):
         elif fd.identifier():
             name = fd.identifier().getText()
         else:
-            name = ctx.getText()
+            name = ctx.getText()            
 
         parameters = self.visit(ctx.parameterList())
         returnParameters = self.visit(ctx.returnParameters()) if ctx.returnParameters() else []
@@ -205,6 +205,9 @@ class AstVisitor(SolidityVisitor):
         else:
             stateMutability = None
 
+        if ctx.modifierList().overrideSpecifier():
+            isOverride = True
+
         return Node(ctx=ctx,
                     type="FunctionDefinition",
                     name=name,
@@ -216,6 +219,7 @@ class AstVisitor(SolidityVisitor):
                     isConstructor=isConstructor,
                     isFallback=isFallback,
                     isReceive=isReceive,
+                    isOverride=isOverride,
                     stateMutability=stateMutability)
 
     def visitReturnParameters(self, ctx: SolidityParser.ReturnParametersContext):
