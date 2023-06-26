@@ -12,6 +12,10 @@ contract Parent {
     function saySomething(string calldata text) external pure returns (string memory) {
         return text;
     }
+
+    function saySomething2(string calldata text) external pure virtual returns (string memory) {
+        return text;
+    }
 }
 
 
