@@ -101,6 +101,7 @@ class AstVisitor(SolidityVisitor):
         allresults = []
         result = self.defaultResult()
         for c in nodes:
+            print(f"Next c {c}")
             childResult = c.accept(self)
             result = self.aggregateResult(result, childResult)
             allresults.append(result)
@@ -1202,6 +1203,17 @@ def objectify(start_node):
             self.constructor = None
             self.inherited_names = {}
 
+        def inheritFromParents(self, parent) -> None:
+            """This method inherits values from the parents such that they are added to this object.
+
+            TODO:
+                Remove private statevars.
+            """
+            self.enums = dict(list(parent.enums.items()) + list(self.enums.items()))
+            self.structs = dict(list(parent.structs.items()) + list(self.structs.items()))
+            self.stateVars = dict(list(parent.stateVars.items()) + list(self.stateVars.items()))
+            self.modifiers = dict(list(parent.modifiers.items()) + list(self.modifiers.items()))
+            self.functions = dict(list(parent.functions.items()) + list(self.functions.items()))
 
         def visitEnumDefinition(self, _node):
             self.enums[_node.name]=_node
@@ -1335,8 +1347,6 @@ def objectify(start_node):
             self.pragmas = []
             self.contracts = {}
 
-            self._current_contract = None
-
         def visitPragmaDirective(self, node):
             self.pragmas.append(node)
 
@@ -1345,7 +1355,8 @@ def objectify(start_node):
 
         def visitContractDefinition(self, node):
             self.contracts[node.name] = ObjectifyContractVisitor(node)
-            self._current_contract = self.contracts[node.name]
+            for bc in node.baseContracts:
+                self.contracts[node.name].inheritFromParents(self.contracts[bc.baseName.namePath])
 
             # subparse the contracts //slightly inefficient but more readable :)
             visit(node, self.contracts[node.name])
