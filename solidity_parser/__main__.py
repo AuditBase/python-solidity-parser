@@ -3,9 +3,20 @@
 
 import sys
 import pprint
-from . import parser
+from . import parser, parse_file, objectify
+import pickle
+
+def pickle_example():
+    print("Hello World!")
+    kk = parse_file(path="samples/simple.sol")
+    k3 = pickle.dumps(kk)
+    unpickled = pickle.loads(k3)
+    print(unpickled)
+
 
 if __name__ == "__main__":
+    pickle_example()
+    
     if not len(sys.argv)>2 or sys.argv[1] not in ("parse","outline"):
         print("\n- missing subcommand or path to solidity file.\n")
         print("#> python -m solidity_parser <subcommand> <solidity file>")
