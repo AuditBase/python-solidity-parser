@@ -32,6 +32,12 @@ class Node(dict):
     def __setattr__(self, name, value):
         self[name] = value
 
+    def __setstate__(self, state):
+        self.update(state)
+    
+    def __getstate__(self):
+        return self
+    
     @staticmethod
     def _get_loc(ctx):
         return {
